@@ -7,13 +7,17 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.AccessToken;
+
 import com.firebase.client.Firebase;
 
 import java.util.EmptyStackException;
@@ -76,26 +80,37 @@ public class MyProfile extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
-        CallbackManager callbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
-        //TODO: set permissions
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                throw new EmptyStackException();
+//        CallbackManager callbackManager = CallbackManager.Factory.create();
+//        LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
+//        loginButton.setReadPermissions("public_profile");
+//        loginButton.setFragment(this);
+//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                throw new EmptyStackException();
                 //do stuff
-            }
-
-            @Override
-            public void onCancel() {
+//            }
+//
+//            @Override
+//            public void onCancel() {
                 //do nothing
-            }
+//            }
 
-            @Override
-            public void onError(FacebookException e) {
+//            @Override
+//            public void onError(FacebookException e) {
                 //do nothing
-            }
-        });
+//            }
+//        });
+
+//        TextView userName = (TextView) view.findViewById(R.id.user_name);
+
+//        AccessToken accessToken =  AccessToken.getCurrentAccessToken();
+//        if (accessToken == null){
+//            userName.setText("It's null, dude.");
+//        }else {
+//            userName.setText(accessToken.getToken());
+//        }
+
 
         return view;
     }
@@ -116,6 +131,7 @@ public class MyProfile extends Fragment {
 //            throw new ClassCastException(activity.toString()
 //                    + " must implement OnFragmentInteractionListener");
 //        }
+
     }
 
     @Override

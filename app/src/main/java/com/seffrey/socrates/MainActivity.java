@@ -14,7 +14,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -87,29 +89,23 @@ public class MainActivity extends Activity implements SocratesHome.OnHomeInterac
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // User selects fragment from left drawer
-
-        Fragment fragment = new SocratesHome();
-        if (position == 1){
-            fragment = new TutorList();}
-        if (position == 2){
-            fragment = new TutorMap();}
-        if (position == 3){
-            fragment = new MyProfile();}
-        if (position == 4){
-            fragment = new SettingsAndAbout();}
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        String tag = fragment.getTag();
-        fragmentManager.beginTransaction()
-                .replace(R.id.base_frame, fragment)
-                .addToBackStack(tag)
-                .commit();
+        onHomeInteraction(position);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(mMenuItems[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    public void refreshText(View view){
+        TextView userName = (TextView) findViewById(R.id.user_name);
+
+        AccessToken accessToken =  AccessToken.getCurrentAccessToken();
+        if (accessToken == null){
+            userName.setText("It's null, dude.");
+        }else {
+            userName.setText(accessToken.getToken());
+        }
     }
 
     @Override
@@ -158,13 +154,18 @@ public class MainActivity extends Activity implements SocratesHome.OnHomeInterac
 
 
     public void onHomeInteraction(int choice) {
-        Fragment fragment = new TutorList();
+
+            Fragment fragment = new TutorList();
         if (choice == 2){
             fragment = new TutorMap();}
         if (choice == 3){
             fragment = new MyProfile();}
         if (choice == 4){
             fragment = new SettingsAndAbout();}
+
+        AccessToken accessToken =  AccessToken.getCurrentAccessToken();
+//        if (accessToken == null){
+
 
         String tag = fragment.getTag();
 
