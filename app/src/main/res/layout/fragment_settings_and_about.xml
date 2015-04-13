@@ -1,0 +1,10 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.seffrey.socrates.SettingsAndAbout">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+        android:layout_margin="30dp"
+        android:text="Created by\n\nRoland Davidson\n\nand\n\nJeffrey Sun\n\nfor\n\nshits\n\nand\n\ngiggles" />
+
+</FrameLayout>

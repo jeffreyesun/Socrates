@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Socrates</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_tutor_list">TutorList</string>
+    <string name="copyrightrun">©Roland Davidson and Jeffrey Sun | Seffrey Industries | www.seffrey.com/socrates</string>
+    <string name="greeting">Your Friendly Campus Tutor Finder </string>
+
+    <string-array name="menu_items">
+        <item>home</item>
+        <item>tutor list</item>
+        <item>tutor map</item>
+        <item>my profile</item>
+        <item>settings&amp;about</item>
+    </string-array>
+
+    <string name="facebook_app_id">1578515909089574</string>
+
+</resources>
