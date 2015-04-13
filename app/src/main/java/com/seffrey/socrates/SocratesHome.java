@@ -13,7 +13,7 @@ import android.widget.Button;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SocratesHome.OnHomeInteractionListener} interface
+ * {@link com.seffrey.socrates.SocratesHome.FragmentSwapListener} interface
  * to handle interaction events.
  * Use the {@link SocratesHome#newInstance} factory method to
  * create an instance of this fragment.
@@ -21,7 +21,7 @@ import android.widget.Button;
 public class SocratesHome extends Fragment {
 
 
-    private OnHomeInteractionListener mListener;
+    private FragmentSwapListener mListener;
 
     public static SocratesHome newInstance() {
         SocratesHome fragment = new SocratesHome();
@@ -44,10 +44,9 @@ public class SocratesHome extends Fragment {
         return inflater.inflate(R.layout.fragment_socrates_home, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(int choice) {
         if (mListener != null) {
-            mListener.onHomeInteraction(choice);
+            mListener.FragmentSwap(choice);
         }
     }
 
@@ -56,10 +55,10 @@ public class SocratesHome extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnHomeInteractionListener) activity;
+            mListener = (FragmentSwapListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnHomeInteractionListener");
+                    + " must implement FragmentSwapListener");
         }
 
 
@@ -81,8 +80,8 @@ public class SocratesHome extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnHomeInteractionListener {
-        public void onHomeInteraction(int choice);
+    public interface FragmentSwapListener {
+        public void FragmentSwap(int choice);
     }
 
 }

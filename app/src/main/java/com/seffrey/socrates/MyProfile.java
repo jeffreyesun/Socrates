@@ -14,6 +14,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.AccessToken;
@@ -79,39 +80,13 @@ public class MyProfile extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
-
-//        CallbackManager callbackManager = CallbackManager.Factory.create();
-//        LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
-//        loginButton.setReadPermissions("public_profile");
-//        loginButton.setFragment(this);
-//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                throw new EmptyStackException();
-                //do stuff
-//            }
-//
-//            @Override
-//            public void onCancel() {
-                //do nothing
-//            }
-
-//            @Override
-//            public void onError(FacebookException e) {
-                //do nothing
-//            }
-//        });
-
-//        TextView userName = (TextView) view.findViewById(R.id.user_name);
-
-//        AccessToken accessToken =  AccessToken.getCurrentAccessToken();
-//        if (accessToken == null){
-//            userName.setText("It's null, dude.");
-//        }else {
-//            userName.setText(accessToken.getToken());
-//        }
-
-
+        TextView profileBox = (TextView)view.findViewById(R.id.profile_box);
+        Profile profile = Profile.getCurrentProfile();
+        if (profile == null) {
+            profileBox.setText("It's null, dude.");
+        } else {
+            profileBox.setText("Hi " + profile.getFirstName());
+        }
         return view;
     }
 

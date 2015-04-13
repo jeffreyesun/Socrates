@@ -3,16 +3,20 @@ package com.seffrey.socrates;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.provider.Contacts;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.app.Fragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,17 +25,25 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.firebase.client.Firebase;
 
+import java.util.EmptyStackException;
 
-public class MainActivity extends Activity implements SocratesHome.OnHomeInteractionListener {
+
+public class MainActivity extends Activity implements SocratesHome.FragmentSwapListener {
 
     private String[] mMenuItems;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private CallbackManager callbackManager;
+    private TextView userName;
+    private ProfileTracker profileTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +101,7 @@ public class MainActivity extends Activity implements SocratesHome.OnHomeInterac
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         // User selects fragment from left drawer
-        onHomeInteraction(position);
+        FragmentSwap(position);
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -102,7 +114,7 @@ public class MainActivity extends Activity implements SocratesHome.OnHomeInterac
 
         AccessToken accessToken =  AccessToken.getCurrentAccessToken();
         if (accessToken == null){
-            userName.setText("It's null, dude.");
+            userName.setText("It's still null, dude.");
         }else {
             userName.setText(accessToken.getToken());
         }
@@ -139,21 +151,81 @@ public class MainActivity extends Activity implements SocratesHome.OnHomeInterac
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void setUpLoginButton() {
+
+        //clear baseFrame
+        FrameLayout baseFrame = (FrameLayout) findViewById(R.id.base_frame);
+        baseFrame.removeAllViews();
+
+        //stick button in baseFrame
+        LayoutInflater inflater = this.getLayoutInflater();
+        LinearLayout buttonLayout = (LinearLayout) inflater.inflate(R.layout.facebook_button, null, false);
+        baseFrame.addView(buttonLayout);
+
+        //setup Button Callbacks and Permissions
+        callbackManager = CallbackManager.Factory.create();
+
+//        profileTracker = new ProfileTracker() {
+//            @Override
+//            protected void onCurrentProfileChanged(
+//                    Profile oldProfile,
+//                    Profile currentProfile) {
+//                userName.setText(currentProfile.getFirstName());
+//            }
+//        };
+
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("public_profile");
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+//                userName.setText("BOOOOOM"); TODO: Fix this ungodly mess
+//        do stuff
+            }
+
+            @Override
+            public void onCancel() {
+                //do nothing
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                //do nothing
+            }
+        });
+
+        //Fill in TextBox with info from AccessToken TODO: Get rid of all this shit
+        userName = (TextView) findViewById(R.id.user_name);
+        Profile profile = Profile.getCurrentProfile();
+        if (profile == null) {
+            userName.setText("It's null, dude.");
+        } else {
+            userName.setText("Hi " + profile.getFirstName());
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void buttonOnePressed(View view){
-        onHomeInteraction(1);
+        FragmentSwap(1);
     }
     public void buttonTwoPressed(View view){
-        onHomeInteraction(2);
+        FragmentSwap(2);
     }
     public void buttonThreePressed(View view){
-        onHomeInteraction(3);
+        FragmentSwap(3);
     }
     public void buttonFourPressed(View view){
-        onHomeInteraction(4);
+        FragmentSwap(4);
     }
 
 
-    public void onHomeInteraction(int choice) {
+    public void FragmentSwap(int choice) {
 
             Fragment fragment = new TutorList();
         if (choice == 2){
@@ -163,18 +235,17 @@ public class MainActivity extends Activity implements SocratesHome.OnHomeInterac
         if (choice == 4){
             fragment = new SettingsAndAbout();}
 
-        AccessToken accessToken =  AccessToken.getCurrentAccessToken();
-//        if (accessToken == null){
+        Profile profile = Profile.getCurrentProfile();
+        if (profile == null && choice == 3){setUpLoginButton();}else {
 
+            String tag = fragment.getTag();
 
-        String tag = fragment.getTag();
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.base_frame, fragment);
+            ft.addToBackStack(tag);
+            ft.commit();
 
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.base_frame, fragment);
-        ft.addToBackStack(tag);
-        ft.commit();
-
-
+        }
     }
 }
