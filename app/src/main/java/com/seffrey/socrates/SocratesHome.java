@@ -13,7 +13,7 @@ import android.widget.Button;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.seffrey.socrates.SocratesHome.FragmentSwapListener} interface
+ * {@link com.seffrey.socrates.SocratesHome.fragmentSwapListener} interface
  * to handle interaction events.
  * Use the {@link SocratesHome#newInstance} factory method to
  * create an instance of this fragment.
@@ -21,7 +21,7 @@ import android.widget.Button;
 public class SocratesHome extends Fragment {
 
 
-    private FragmentSwapListener mListener;
+    private fragmentSwapListener mListener;
 
     public static SocratesHome newInstance() {
         SocratesHome fragment = new SocratesHome();
@@ -46,7 +46,7 @@ public class SocratesHome extends Fragment {
 
     public void onButtonPressed(int choice) {
         if (mListener != null) {
-            mListener.FragmentSwap(choice);
+            mListener.fragmentSwap(choice);
         }
     }
 
@@ -55,7 +55,7 @@ public class SocratesHome extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (FragmentSwapListener) activity;
+            mListener = (fragmentSwapListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement FragmentSwapListener");
@@ -80,8 +80,8 @@ public class SocratesHome extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface FragmentSwapListener {
-        public void FragmentSwap(int choice);
+    public interface fragmentSwapListener {
+        public void fragmentSwap(int choice);
     }
 
 }
