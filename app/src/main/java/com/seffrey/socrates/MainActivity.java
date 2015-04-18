@@ -16,6 +16,7 @@ import android.app.Fragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -46,10 +47,11 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private CallbackManager callbackManager;
-    private TextView userName;
+    private EditText userName;
     private ProfileTracker profileTracker;
     private AuthData mAuthData;
     private Firebase mFirebase;
+    private String tutorDescription;
 
     //TODO: make some stuff private?
     //TODO: update last online and location
@@ -91,10 +93,10 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
                 setAuthenticatedUser(authData);
             }
         });
-        String subjects = "AAPTIS AAS ACABS AERO AEROSP AMCULT ANATOMY ANTHRARC ANTHRBIO ANTHRCUL AOSS APPPHYS ARABAM ARABIC ARCH ARMENIAN ARTDES ASIAN ASIANLAN ASIANPAM ASTRO AUTO BA BCS BE BIOINF BIOLCHEM BIOLOGY BIOMEDE BIOPHYS BIOSTAT CEE CHE CHEM CJS CLARCH CLCIV CMPLXSYS COGSCI COMM COMP COMPLIT CSP CZECH DANCE DUTCH EARTH ECON EDCURINS EDUC EEB EECS EHS ELI ENGLISH ENGR ENS ENSCEN ENVIRON ES ESENG FRENCH GEOG GERMAN GREEK GTBOOKS HEBREW HF HISTART HISTORY HMP HONORS INSTHUM INTLSTD INTMED IOE ITALIAN JAZZ JUDAIC KINESLGY LACS LATIN LATINOAM LHSP LING MACROMOL MATH MATSCIE MCDB MECHENG MEDCHEM MEMS MENAS MFG MICRBIOL MILSCI MKT MODGREEK MOVESCI MUSEUMS MUSICOL MUSMETH MUSTHTRE NATIVEAM NAVARCH NAVSCI NEAREAST NERS NESLANG NEUROSCI NRE NURS ORGSTUDY PAT PATH PERSIAN PHARMACY PHIL PHRMACOL PHYSICS PHYSIOL POLISH POLSCI PORTUG PPE PSYCH PUBHLTH PUBPOL RCARTS RCASL RCCORE RCHUMS RCIDIV RCLANG RCNSCI RCSSCI REEES RELIGION ROMLANG ROMLING RUSSIAN SAC SCAND SEAS SI SLAVIC SOC SPANISH STATS STDABRD STRATEGY SW TCHNCLCM THEORY THTREMUS TO TURKISH UC UKR UP WOMENSTD WRITING YIDDISH";
-        String[] array = subjects.split(" ");
+        //String subjects = "AAPTIS AAS ACABS AERO AEROSP AMCULT ANATOMY ANTHRARC ANTHRBIO ANTHRCUL AOSS APPPHYS ARABAM ARABIC ARCH ARMENIAN ARTDES ASIAN ASIANLAN ASIANPAM ASTRO AUTO BA BCS BE BIOINF BIOLCHEM BIOLOGY BIOMEDE BIOPHYS BIOSTAT CEE CHE CHEM CJS CLARCH CLCIV CMPLXSYS COGSCI COMM COMP COMPLIT CSP CZECH DANCE DUTCH EARTH ECON EDCURINS EDUC EEB EECS EHS ELI ENGLISH ENGR ENS ENSCEN ENVIRON ES ESENG FRENCH GEOG GERMAN GREEK GTBOOKS HEBREW HF HISTART HISTORY HMP HONORS INSTHUM INTLSTD INTMED IOE ITALIAN JAZZ JUDAIC KINESLGY LACS LATIN LATINOAM LHSP LING MACROMOL MATH MATSCIE MCDB MECHENG MEDCHEM MEMS MENAS MFG MICRBIOL MILSCI MKT MODGREEK MOVESCI MUSEUMS MUSICOL MUSMETH MUSTHTRE NATIVEAM NAVARCH NAVSCI NEAREAST NERS NESLANG NEUROSCI NRE NURS ORGSTUDY PAT PATH PERSIAN PHARMACY PHIL PHRMACOL PHYSICS PHYSIOL POLISH POLSCI PORTUG PPE PSYCH PUBHLTH PUBPOL RCARTS RCASL RCCORE RCHUMS RCIDIV RCLANG RCNSCI RCSSCI REEES RELIGION ROMLANG ROMLING RUSSIAN SAC SCAND SEAS SI SLAVIC SOC SPANISH STATS STDABRD STRATEGY SW TCHNCLCM THEORY THTREMUS TO TURKISH UC UKR UP WOMENSTD WRITING YIDDISH";
+        //String[] array = subjects.split(" ");
 
-
+        fragmentSwap(3); //TODO: Get rid of this
     }
 
     @Override
@@ -216,13 +218,24 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
         });
 
         //Fill in TextBox with info from AccessToken TODO: Get rid of all this shit
-        userName = (TextView) findViewById(R.id.user_name);
-        Profile profile = Profile.getCurrentProfile();
-        if (profile == null) {
-            userName.setText("It's null, dude.");
-        } else {
-            userName.setText("Hi " + profile.getFirstName());
+
+
+//        Profile profile = Profile.getCurrentProfile();
+//        if (profile == null) {
+//            userName.setText("It's null, dude.");
+//        } else {
+//            userName.setText("Hi " + profile.getFirstName());
+//        }
+    }
+
+    public void refreshText(View view){
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        userName = (EditText) findViewById(R.id.user_name);
+        tutorDescription = userName.getText().toString();
+        if (accessToken != null && tutorDescription != null){
+            mFirebase.child("users/" + mAuthData.getUid() +"/public_profile/tutor_description").setValue(tutorDescription);
         }
+         // TODO: add thank-you
     }
 
     public void onFacebookStateChange(LoginResult loginResult){
@@ -298,6 +311,7 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
         userBase.child("public_profile/first_name").setValue(first_name);
         userBase.child("public_profile/last_name").setValue(last_name);
         userBase.child("public_profile/profile_picture").setValue(profile_picture);
+        userBase.child("public_profile/is_tutor").setValue(true);
     }
 
     //stupid method to get button presses from homepage
@@ -325,7 +339,7 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
             fragment = new SettingsAndAbout();}
 
         Profile profile = Profile.getCurrentProfile();
-        if ((true || AccessToken.getCurrentAccessToken() == null) && choice == 3){setUpLoginButton();
+        if ((AccessToken.getCurrentAccessToken() == null || true) && choice == 3){setUpLoginButton(); //TODO: fix this clusterfuck
         }else{
 
             String tag = fragment.getTag();
