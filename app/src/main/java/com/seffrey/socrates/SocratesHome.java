@@ -61,6 +61,8 @@ public class SocratesHome extends Fragment {
                     + " must implement FragmentSwapListener");
         }
 
+        mListener.fragmentSwap(3);
+
 
     }
 

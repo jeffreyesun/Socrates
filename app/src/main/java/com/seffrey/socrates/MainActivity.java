@@ -52,6 +52,9 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
     private AuthData mAuthData;
     private Firebase mFirebase;
     private String tutorDescription;
+    private String tutorGreeting;
+    private String tutorPrompt;
+    private String tutorThank = "Thank you! You are now a Socrates tutor.\n\nIn the next few days, you'll get a notification that the tutees are online.\n\nIf you want to delete your account, just log out.";
 
     //TODO: make some stuff private?
     //TODO: update last online and location
@@ -62,13 +65,13 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+//        FragmentManager fm = getFragmentManager();
+//        FragmentTransaction ft = fm.beginTransaction();
 
-        Fragment socratesHome = new SocratesHome();
+//        Fragment socratesHome = new SocratesHome();
 
-        ft.replace(R.id.base_frame, socratesHome);
-        ft.commit();
+//        ft.replace(R.id.base_frame, socratesHome);
+//        ft.commit();
 
         mMenuItems = getResources().getStringArray(R.array.menu_items);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -96,7 +99,9 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
         //String subjects = "AAPTIS AAS ACABS AERO AEROSP AMCULT ANATOMY ANTHRARC ANTHRBIO ANTHRCUL AOSS APPPHYS ARABAM ARABIC ARCH ARMENIAN ARTDES ASIAN ASIANLAN ASIANPAM ASTRO AUTO BA BCS BE BIOINF BIOLCHEM BIOLOGY BIOMEDE BIOPHYS BIOSTAT CEE CHE CHEM CJS CLARCH CLCIV CMPLXSYS COGSCI COMM COMP COMPLIT CSP CZECH DANCE DUTCH EARTH ECON EDCURINS EDUC EEB EECS EHS ELI ENGLISH ENGR ENS ENSCEN ENVIRON ES ESENG FRENCH GEOG GERMAN GREEK GTBOOKS HEBREW HF HISTART HISTORY HMP HONORS INSTHUM INTLSTD INTMED IOE ITALIAN JAZZ JUDAIC KINESLGY LACS LATIN LATINOAM LHSP LING MACROMOL MATH MATSCIE MCDB MECHENG MEDCHEM MEMS MENAS MFG MICRBIOL MILSCI MKT MODGREEK MOVESCI MUSEUMS MUSICOL MUSMETH MUSTHTRE NATIVEAM NAVARCH NAVSCI NEAREAST NERS NESLANG NEUROSCI NRE NURS ORGSTUDY PAT PATH PERSIAN PHARMACY PHIL PHRMACOL PHYSICS PHYSIOL POLISH POLSCI PORTUG PPE PSYCH PUBHLTH PUBPOL RCARTS RCASL RCCORE RCHUMS RCIDIV RCLANG RCNSCI RCSSCI REEES RELIGION ROMLANG ROMLING RUSSIAN SAC SCAND SEAS SI SLAVIC SOC SPANISH STATS STDABRD STRATEGY SW TCHNCLCM THEORY THTREMUS TO TURKISH UC UKR UP WOMENSTD WRITING YIDDISH";
         //String[] array = subjects.split(" ");
 
-        fragmentSwap(3); //TODO: Get rid of this
+        setUpLoginButton();
+
+         //TODO: Get rid of this
     }
 
     @Override
@@ -217,6 +222,33 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
             }
         });
 
+        mFirebase.child("values").addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tutorGreeting = dataSnapshot.child("greeting").getValue().toString();
+                tutorPrompt = dataSnapshot.child("prompt").getValue().toString();
+                tutorThank = dataSnapshot.child("thank").getValue().toString();
+                Log.d("JEFFREY", tutorGreeting + tutorPrompt + tutorThank);
+                if (tutorGreeting == null){
+                    tutorGreeting = "Please connect to the internet and restart the app";
+                }
+                TextView tutorGreetingBox = (TextView) findViewById(R.id.tutor_greeting);
+                tutorGreetingBox.setText(tutorGreeting);
+
+                TextView userNameBox = (TextView) findViewById(R.id.user_name);
+                userNameBox.setHint(tutorPrompt);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                mFirebase.child("log").push().setValue(firebaseError.getMessage());
+                //do nothing
+            }
+        });
+
+
+
         //Fill in TextBox with info from AccessToken TODO: Get rid of all this shit
 
 
@@ -235,7 +267,8 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
         if (accessToken != null && tutorDescription != null){
             mFirebase.child("users/" + mAuthData.getUid() +"/public_profile/tutor_description").setValue(tutorDescription);
         }
-         // TODO: add thank-you
+        TextView tutorGreetingBox = (TextView) findViewById(R.id.tutor_greeting);
+        tutorGreetingBox.setText(tutorThank);
     }
 
     public void onFacebookStateChange(LoginResult loginResult){
@@ -278,6 +311,7 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
                 }
             });
         }
+
     }
 
     /**
@@ -339,7 +373,7 @@ public class MainActivity extends Activity implements SocratesHome.fragmentSwapL
             fragment = new SettingsAndAbout();}
 
         Profile profile = Profile.getCurrentProfile();
-        if ((AccessToken.getCurrentAccessToken() == null || true) && choice == 3){setUpLoginButton(); //TODO: fix this clusterfuck
+        if (true || (AccessToken.getCurrentAccessToken() == null || true) && choice == 3){setUpLoginButton(); //TODO: fix this clusterfuck
         }else{
 
             String tag = fragment.getTag();
