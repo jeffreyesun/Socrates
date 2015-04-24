@@ -9,7 +9,7 @@
         android:layout_height="0dp"
         android:id="@+id/imageView"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/socrateslarge"
+        android:src="@drawable/socrates_large"
         android:adjustViewBounds="true"
         android:layout_weight="2"/>
 

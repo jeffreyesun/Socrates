@@ -12,7 +12,7 @@
                 android:layout_height="0dp"
                 android:id="@+id/imageView"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/socrateslarge"
+                android:src="@drawable/socrates_large"
                 android:adjustViewBounds="true"
                 android:layout_weight="0.5"/>
             <TextView
@@ -77,7 +77,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/copyrightrun"
+        android:text="@string/copyright_run"
         android:textSize="5pt"/>
 
     </LinearLayout>
