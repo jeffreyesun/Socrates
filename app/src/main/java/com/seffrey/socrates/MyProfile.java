@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +32,12 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.EmptyStackException;
 
+import com.seffrey.socrates.SocratesHome.FragmentHost;
+
 public class MyProfile extends Fragment {
     private Firebase mFirebase;
-//    private SocratesHome.FragmentSwapListener parent;
-    private CallbackManager callbackManager;
+    private FragmentHost Parent;
+
 
     public MyProfile() {
         // Required empty public constructor
@@ -49,21 +52,20 @@ public class MyProfile extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        //set local user variables
+        /* set up variables */
         mFirebase = new Firebase("https://sizzling-fire-2418.firebaseio.com/");
-
-        // Set up login button
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+        CallbackManager callbackManager = Parent.getCallbackManager();
+
+        /* Set up login button */
         LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
         loginButton.setReadPermissions("public_profile");
-        callbackManager = CallbackManager.Factory.create();
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
             @Override
             public void onSuccess(LoginResult loginResult) {
                 AccessToken accessToken = loginResult.getAccessToken();
                 if (accessToken != null){
-//                    parent.fragmentSwap(3);
                 } else {
                     mFirebase.unauth();
                 }
@@ -80,7 +82,7 @@ public class MyProfile extends Fragment {
             }
         });
 
-        // Check if logged in, select sub-fragment accordingly.
+        /* Check if logged in, select sub-fragment accordingly */
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if (Profile.getCurrentProfile() == null) {
@@ -97,7 +99,7 @@ public class MyProfile extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-//        parent = (SocratesHome.FragmentSwapListener) activity;
+        Parent = (FragmentHost) activity;
 
     }
 
@@ -110,6 +112,5 @@ public class MyProfile extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -1,25 +1,24 @@
 package com.seffrey.socrates;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+
+import com.facebook.CallbackManager;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.seffrey.socrates.SocratesHome.FragmentSwapListener} interface
+ * {@link com.seffrey.socrates.SocratesHome.FragmentHost} interface
  * to handle interaction events.
  */
 public class SocratesHome extends Fragment {
 
-
-    private FragmentSwapListener mListener;
+    private FragmentHost mListener;
 
     public SocratesHome() {
         // Required empty public constructor
@@ -48,10 +47,10 @@ public class SocratesHome extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (FragmentSwapListener) activity;
+            mListener = (FragmentHost) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement FragmentSwapListener");
+                    + " must implement FragmentHost");
         }
     }
 
@@ -61,7 +60,9 @@ public class SocratesHome extends Fragment {
         mListener = null;
     }
 
-    public interface FragmentSwapListener {
+    public interface FragmentHost {
+        public CallbackManager getCallbackManager();
         public void fragmentSwap(int choice);
     }
+
 }

@@ -5,7 +5,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/tutor_greeting"
+        android:id="@+id/greeting"
         android:text="@string/please_connect"/>
 
 </FrameLayout>
