@@ -18,10 +18,4 @@
 
     <string name="facebook_app_id">1578515909089574</string>
 
-    <string name="tutor_greeting">Hi!\n\nSigning up for Socrates is easy-peasy. Just click the button below, and you\'re done! We\'ll send you an alert when your tutees will start using the app.</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
 </resources>

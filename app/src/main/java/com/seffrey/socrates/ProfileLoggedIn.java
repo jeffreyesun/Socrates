@@ -23,7 +23,6 @@ import com.firebase.client.ValueEventListener;
 public class ProfileLoggedIn extends Fragment {
     private Firebase firebase;
     private String userName;
-    private String description;
     private String userDescription;
     private Boolean isTutor;
     private String tutorDescription;
@@ -50,7 +49,10 @@ public class ProfileLoggedIn extends Fragment {
             @Override
             public void onAuthStateChanged(AuthData authData) {
                 if (authData == null) {
-                    // TODO: clear textboxes
+                    ((EditText) mView.findViewById(R.id.user_name)).setText("Server Error");
+                    ((EditText) mView.findViewById(R.id.user_description)).setText("Server Error");
+                    ((EditText) mView.findViewById(R.id.tutor_description)).setText("Server Error");
+                    ((CheckBox) mView.findViewById(R.id.is_tutor)).setChecked(false);
                 } else {
                     firebase.child("users/" + firebase.getAuth().getUid() + "/public_profile").addListenerForSingleValueEvent(new profileRefresh());
                 }
@@ -64,18 +66,23 @@ public class ProfileLoggedIn extends Fragment {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+            if (!dataSnapshot.exists()){
+                /* TODO: realize how stupid this hack is and make something decent */
+                try{Thread.sleep(2000);} catch (InterruptedException ignored) {}
+                firebase.child("users/" + firebase.getAuth().getUid() + "/public_profile").addListenerForSingleValueEvent(new profileRefresh());
+            } else {
+                /* fetch account data from server */
+                userName = dataSnapshot.child("first_name").getValue().toString() + " " + dataSnapshot.child("last_name").getValue().toString();
+                userDescription = dataSnapshot.child("user_description").getValue().toString();
+                isTutor = (Boolean) dataSnapshot.child("is_tutor").getValue();
+                tutorDescription = dataSnapshot.child("tutor_description").getValue().toString();
 
-             /* fetch account data from server */
-            userName = dataSnapshot.child("first_name").getValue().toString() + " " + dataSnapshot.child("last_name").getValue().toString();
-            userDescription = dataSnapshot.child("user_description").getValue().toString();
-            isTutor = (Boolean) dataSnapshot.child("is_tutor").getValue();
-            tutorDescription = dataSnapshot.child("tutor_description").getValue().toString();
-
-            /* fill in profile from server */
-            ((EditText) mView.findViewById(R.id.user_name)).setText(userName);
-            ((EditText) mView.findViewById(R.id.user_description)).setText(userDescription);
-            ((EditText) mView.findViewById(R.id.tutor_description)).setText(tutorDescription);
-            ((CheckBox) mView.findViewById(R.id.is_tutor)).setChecked(isTutor);
+                /* fill in profile from server */
+                ((EditText) mView.findViewById(R.id.user_name)).setText(userName);
+                ((EditText) mView.findViewById(R.id.user_description)).setText(userDescription);
+                ((EditText) mView.findViewById(R.id.tutor_description)).setText(tutorDescription);
+                ((CheckBox) mView.findViewById(R.id.is_tutor)).setChecked(isTutor);
+            }
         }
 
         @Override

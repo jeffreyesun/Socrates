@@ -13,7 +13,6 @@ import android.app.Fragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.facebook.AccessToken;
@@ -40,6 +39,7 @@ public class MainActivity extends Activity implements FragmentHost {
     private Firebase mFirebase;
     private CallbackManager callbackManager;
     private Thread notifierThread = null;
+    private AuthData mAuthData;
 
 
     //endregion
@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements FragmentHost {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.drawer_list_item, mMenuItems));
 
         // Drawer click listener callback
@@ -90,7 +90,7 @@ public class MainActivity extends Activity implements FragmentHost {
         Firebase.setAndroidContext(this);
         mFirebase = new Firebase("https://sizzling-fire-2418.firebaseio.com/");
 
-        /* Listener for Firebase logins (This runs at start too) */
+        /* Listener for Firebase logins */
         mFirebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
@@ -99,7 +99,7 @@ public class MainActivity extends Activity implements FragmentHost {
         });
 
         /* Listener for Facebook logins */
-        ProfileTracker profileTracker = new ProfileTracker() {
+        new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 fragmentSwap(3);
@@ -179,42 +179,26 @@ public class MainActivity extends Activity implements FragmentHost {
 
     // region Firebase
 
+    /* either stops the notifier (on logout), calls setUpUser (for new user), or calls summonNotifierDaemon (else) */
     public void setAuthenticatedUser(AuthData authData) {
-        Log.d("setAuthenticatedUser", "called");
         if (authData == null) {
-            // TODO: logout. Need to do anything?
-            try{notifierThread.interrupt();} catch (NullPointerException e){Log.d("notifierDaemon", "NullPointerException");} // interrupts the tracker thread
+            try{notifierThread.interrupt();Log.d("NotifierDaemon", "interrupted by setAuthenticatedUser");} catch (NullPointerException e){Log.d("notifierDaemon", "NullPointerException");} // interrupts the tracker thread
         } else {
             mFirebase.child("users/" + authData.getUid() + "/public_profile").addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (!dataSnapshot.exists()) {
-                        // TODO: Set up user
-                    }
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
-            }); // set up new user
-            mFirebase.child("users/" + authData.getUid() + "/public_profile/is_tutor").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (((Boolean) dataSnapshot.getValue())) {
-                        notifierThread = new Thread(new notifierDaemon());
-                        notifierThread.start();
+                        setUpUser();
                     } else {
-                        try{notifierThread.interrupt();} catch (NullPointerException e){Log.d("notifierDaemon", "NullPointerException");} // interrupts the tracker thread
+                        summonNotifierDaemon();
                     }
                 }
 
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
+                public void onCancelled(FirebaseError firebaseError) {}
+            });
 
-                }
-            }); // as long as user is a tutor, update location
         }
     }
 
@@ -223,11 +207,49 @@ public class MainActivity extends Activity implements FragmentHost {
         @Override
         public void run() {
             while (true){
-                try{Thread.sleep(5000);} catch (InterruptedException e) {return;}
+                Log.d("notifierDaemon", "summoned");
+                // Every 30s, updates location in unix time
+                try{Thread.sleep(2000);} catch (InterruptedException ignored) {}
                 int lastOnline = (int) (System.currentTimeMillis()/1000L);
-                try {mFirebase.child("tutors/" + mFirebase.getAuth().getUid()).setValue(lastOnline);} catch (NullPointerException e) {Log.d("notifierDaemon", "not Stopped in Time");}
+                try {mFirebase.child("tutors/" + mFirebase.getAuth().getUid()).setValue(lastOnline);} catch (NullPointerException ignored) {}
+                try{Thread.sleep(28000);} catch (InterruptedException e) {Log.d("notifierDaemon","interrupted");return;}
             }
         }
+    }
+
+    /* While user is a tutor, track on server */
+    public void summonNotifierDaemon(){
+        mAuthData = mFirebase.getAuth();
+        mFirebase.child("users/" + mAuthData.getUid() + "/public_profile/is_tutor").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean isTutor = (Boolean) dataSnapshot.getValue();
+                if (isTutor == null){isTutor = false;}
+                if (isTutor) {
+                    notifierThread = new Thread(new notifierDaemon());
+                    notifierThread.start();
+                } else {
+                    try{notifierThread.interrupt();Log.d("notifierDaemon", "interrupted by Summoner");} catch (NullPointerException e){Log.d("notifierDaemon", "NullPointerException");} // interrupts the tracker thread
+                    mFirebase.child("tutors/"+mAuthData.getUid()).setValue(null); // takes user off tutor list
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+    public void setUpUser(){
+        Firebase userBase = mFirebase.child("users/" + mFirebase.getAuth().getUid() + "/public_profile");
+        Profile profile = Profile.getCurrentProfile();
+        userBase.child("first_name").setValue(profile.getFirstName());
+        userBase.child("last_name").setValue(profile.getLastName());
+        userBase.child("is_tutor").setValue(false);
+        userBase.child("user_description").setValue("Please enter a description of yourself. For example: \"I am a sophomore in engineering looking for help with IOE.\"");
+        userBase.child("tutor_description").setValue("Please enter a description of what subjects you can tutor. For example: \"I speak French fluently, and I can also help with Orgo!\"");
+        summonNotifierDaemon();
     }
 
     //endregion
