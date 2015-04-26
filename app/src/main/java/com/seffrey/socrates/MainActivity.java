@@ -23,8 +23,11 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.seffrey.socrates.SocratesHome.FragmentHost;
 
 
@@ -36,13 +39,8 @@ public class MainActivity extends Activity implements FragmentHost {
     private ListView mDrawerList;
     private Firebase mFirebase;
     private CallbackManager callbackManager;
+    private Thread notifierThread = null;
 
-    private EditText userName;
-    private ProfileTracker profileTracker;
-    private String tutorDescription;
-    private String tutorGreeting;
-    private String tutorPrompt;
-    private String tutorThank = "Thank you! You are now a Socrates tutor.\n\nIn the next few days, you'll get a notification that the tutees are online.\n\nIf you want to delete your account, just log out.";
 
     //endregion
     /* TODO: update last online and location */
@@ -84,15 +82,15 @@ public class MainActivity extends Activity implements FragmentHost {
 
         //endregion
 
-        // Facebook
+        /* Facebook */
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
-        // Firebase
+        /* Firebase */
         Firebase.setAndroidContext(this);
         mFirebase = new Firebase("https://sizzling-fire-2418.firebaseio.com/");
 
-        // Listener for Firebase logins (This runs at start too)
+        /* Listener for Firebase logins (This runs at start too) */
         mFirebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
@@ -100,13 +98,13 @@ public class MainActivity extends Activity implements FragmentHost {
             }
         });
 
-        // Listener for Facebook logins
-        profileTracker = new ProfileTracker() {
+        /* Listener for Facebook logins */
+        ProfileTracker profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 fragmentSwap(3);
                 if (currentProfile == null) {
-                    //TODO: logout method
+                    mFirebase.unauth();
                 } else {
                     mFirebase.authWithOAuthToken("facebook",AccessToken.getCurrentAccessToken().getToken(), null);
                 }
@@ -181,11 +179,56 @@ public class MainActivity extends Activity implements FragmentHost {
 
     // region Firebase
 
-    public void setAuthenticatedUser(AuthData authData){
+    public void setAuthenticatedUser(AuthData authData) {
         Log.d("setAuthenticatedUser", "called");
+        if (authData == null) {
+            // TODO: logout. Need to do anything?
+            try{notifierThread.interrupt();} catch (NullPointerException e){Log.d("notifierDaemon", "NullPointerException");} // interrupts the tracker thread
+        } else {
+            mFirebase.child("users/" + authData.getUid() + "/public_profile").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        // TODO: Set up user
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            }); // set up new user
+            mFirebase.child("users/" + authData.getUid() + "/public_profile/is_tutor").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (((Boolean) dataSnapshot.getValue())) {
+                        notifierThread = new Thread(new notifierDaemon());
+                        notifierThread.start();
+                    } else {
+                        try{notifierThread.interrupt();} catch (NullPointerException e){Log.d("notifierDaemon", "NullPointerException");} // interrupts the tracker thread
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            }); // as long as user is a tutor, update location
+        }
     }
 
+    public class notifierDaemon implements Runnable{
 
+        @Override
+        public void run() {
+            while (true){
+                try{Thread.sleep(5000);} catch (InterruptedException e) {return;}
+                int lastOnline = (int) (System.currentTimeMillis()/1000L);
+                try {mFirebase.child("tutors/" + mFirebase.getAuth().getUid()).setValue(lastOnline);} catch (NullPointerException e) {Log.d("notifierDaemon", "not Stopped in Time");}
+            }
+        }
+    }
 
     //endregion
 
@@ -210,17 +253,22 @@ public class MainActivity extends Activity implements FragmentHost {
 
     public void fragmentSwap(int choice) {
         Fragment fragment;
-
-        if (choice == 0) {
-            fragment = new SocratesHome();
-        } else if (choice == 1) {
-            fragment = new TutorList();
-        } else if (choice == 2) {
-            fragment = new TutorMap();
-        } else if (choice == 3) {
-            fragment = new MyProfile();
-        } else {
-            fragment = new SettingsAndAbout();
+        switch (choice) {
+            case 0:
+                fragment = new SocratesHome();
+                break;
+            case 1:
+                fragment = new TutorList();
+                break;
+            case 2:
+                fragment = new TutorMap();
+                break;
+            case 3:
+                fragment = new MyProfile();
+                break;
+            default:
+                fragment = new SettingsAndAbout();
+                break;
         }
 
         Log.d(Integer.toString(choice), "5");
