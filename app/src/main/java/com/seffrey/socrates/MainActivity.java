@@ -206,8 +206,8 @@ public class MainActivity extends Activity implements FragmentHost {
 
         @Override
         public void run() {
+            Log.d("notifierDaemon", "summoned");
             while (true){
-                Log.d("notifierDaemon", "summoned");
                 // Every 30s, updates location in unix time
                 try{Thread.sleep(2000);} catch (InterruptedException ignored) {}
                 int lastOnline = (int) (System.currentTimeMillis()/1000L);

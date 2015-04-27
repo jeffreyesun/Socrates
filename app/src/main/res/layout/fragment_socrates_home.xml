@@ -1,83 +1,100 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
     android:background="#ffffff"
     android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:id="@+id/imageView"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/socrates_large"
-                android:adjustViewBounds="true"
-                android:layout_weight="0.5"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/greeting"
-                android:textSize="14dp"
-                android:typeface="sans"
-                android:gravity="center"
-                android:layout_weight="0.3"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/imageView"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/socrates_large"
+        android:adjustViewBounds="true"
+        android:layout_weight="0.5"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/greeting"
+        android:textSize="14sp"
+        android:typeface="sans"
+        android:gravity="center"
+        android:layout_weight="0.3"/>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal">
 
-                <ImageButton
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/listselector"
-                    android:layout_margin="10dp"
-                    android:id="@+id/button1"
-                    android:onClick="buttonOnePressed"
-                    android:layout_weight="1"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/listselector"
+            android:scaleType="fitEnd"
+            android:background="@null"
+            android:adjustViewBounds="true"
+            android:layout_margin="10dp"
+            android:id="@+id/button1"
+            android:onClick="buttonOnePressed"
+            android:layout_weight="1"/>
 
-                <ImageButton
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/mapselector"
-                    android:layout_margin="10dp"
-                    android:id="@+id/button2"
-                    android:onClick="buttonTwoPressed"
-                    android:layout_weight="1"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mapselector"
+            android:scaleType="fitStart"
+            android:background="@null"
+            android:adjustViewBounds="true"
+            android:layout_margin="10dp"
+            android:id="@+id/button2"
+            android:onClick="buttonTwoPressed"
+            android:layout_weight="1"/>
 
 
-                </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_gravity="end">
-                <ImageButton
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/profileselector"
-                    android:layout_margin="10dp"
-                    android:id="@+id/button3"
-                    android:onClick="buttonThreePressed"
-                    android:layout_weight="1"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal">
 
-                <ImageButton
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/settingsselector"
-                    android:layout_margin="10dp"
-                    android:id="@+id/button4"
-                    android:onClick="buttonFourPressed"
-                    android:layout_weight="1"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/profileselector"
+            android:scaleType="fitEnd"
+            android:background="@null"
+            android:adjustViewBounds="true"
+            android:layout_margin="10dp"
+            android:id="@+id/button3"
+            android:onClick="buttonThreePressed"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/settingsselector"
+            android:scaleType="fitStart"
+            android:background="@null"
+            android:adjustViewBounds="true"
+            android:layout_margin="10dp"
+            android:id="@+id/button4"
+            android:onClick="buttonFourPressed"
+            android:layout_weight="1"/>
 
     </LinearLayout>
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/copyright_run"
         android:textSize="5pt"/>
 
-    </LinearLayout>
+</LinearLayout>

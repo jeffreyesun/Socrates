@@ -3,6 +3,7 @@ package com.seffrey.socrates;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.facebook.CallbackManager;
 public class SocratesHome extends Fragment {
 
     private FragmentHost mListener;
+    private View view;
 
     public SocratesHome() {
         // Required empty public constructor
@@ -32,16 +34,10 @@ public class SocratesHome extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_socrates_home, container, false);
+        /* Inflate layout */
+        view = inflater.inflate(R.layout.fragment_socrates_home, container, false);
+        return view;
     }
-
-    public void onButtonPressed(int choice) {
-        if (mListener != null) {
-            mListener.fragmentSwap(choice);
-        }
-    }
-
 
     @Override
     public void onAttach(Activity activity) {

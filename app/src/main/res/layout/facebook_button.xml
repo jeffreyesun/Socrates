@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="#ffffff">
 
+    <!--
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -55,5 +56,5 @@
         android:onClick="refreshText"
         android:layout_weight="0"/>
 
-
+        -->
 </LinearLayout>

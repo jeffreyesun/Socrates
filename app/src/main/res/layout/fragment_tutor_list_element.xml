@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/default_profile_picture"
+        android:layout_gravity="start"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="start"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:height="20dp"
+                android:text="  Name "
+                android:background="#dddddd"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jeffrey Sun"
+                android:id="@+id/user_name"
+                android:layout_marginLeft="30dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:height="20dp"
+            android:text="  Description "
+            android:background="#dddddd"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tutor_description"
+            android:text="    Hi I'm a tutor and so on and so forth lots oto oto to ot ototo ot ootot ot oot oto t"/>
+
+    </LinearLayout>
+
+</LinearLayout>
