@@ -4,6 +4,6 @@
 
     <TextView android:layout_width="match_parent" android:layout_height="match_parent"
         android:layout_margin="30dp"
-        android:text="Created by\n\nRoland Davidson\n\nand\n\nJeffrey Sun\n\nfor\n\nshits\n\nand\n\ngiggles" />
+        android:text="Created by\n\nRoland Davidson\n\nand\n\nJeffrey Sun" />
 
 </FrameLayout>
