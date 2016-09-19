@@ -24,8 +24,6 @@ Tutors can choose whether they want their profiles to be always visible, or only
 
 Instead of viewing the tutors as a list, users can view the locations of currently online tutors in real-time on a map of their area. Developed with the Google Maps API, not yet integrated.
 
+This is the Android version.
 
-
-
-
-This is the Android version
+![Final S](https://raw.githubusercontent.com/jeffreyesun/Socrates/master/images/ic_launcher-web.png)
