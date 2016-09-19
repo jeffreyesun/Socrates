@@ -4,6 +4,9 @@
 
 This repository is the minimum viable product (depending on whether or not our Firebase account is still active) where tutors can make profiles, which can be fetched and viewed by anyone who downloads the app.
 
+![screenshot](https://raw.githubusercontent.com/jeffreyesun/Socrates/master/images/socrates_screenshot.png)
+Socrates running on a Nexus 7.
+
 #Core Features
 
 ##Profiles
